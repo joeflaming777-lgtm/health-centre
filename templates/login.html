@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clinical Staff Sign In — Hospital ER Scheduler</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <style>
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f2744 0%, #1e3a8a 50%, #0d9488 100%);
+      padding: 24px;
+    }
+    .login-card {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+      width: 100%;
+      max-width: 440px;
+      overflow: hidden;
+    }
+    .login-header {
+      background: #ffffff;
+      padding: 32px 32px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .login-brand-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--color-accent), #0284c7);
+      color: white;
+      font-weight: 800;
+      font-size: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.4);
+    }
+    .login-body {
+      padding: 28px 32px;
+    }
+    .demo-buttons-box {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--color-border);
+    }
+    .demo-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: #f8fafc;
+      font-size: 12.5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition-normal);
+    }
+    .demo-btn:hover {
+      background: #ffffff;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-sm);
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-brand-icon">ER</div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--color-primary); letter-spacing: -0.4px;">
+          Emergency Room Scheduling
+        </h2>
+        <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 4px;">
+          Intelligent Clinical Scheduling & Resource Management
+        </p>
+      </div>
+
+      <div class="login-body">
+        <div id="login-error-alert" class="alert-box alert-danger" style="display: none; margin-bottom: 16px;"></div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-username">Username</label>
+            <input type="text" id="login-username" class="form-control" placeholder="e.g. admin or triage_nurse" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required>
+          </div>
+
+          <button type="submit" id="btn-login-submit" class="btn btn-primary" style="width: 100%; padding: 11px; margin-top: 6px;">
+            Sign In to Clinical Console →
+          </button>
+        </form>
+
+        <div class="demo-buttons-box">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 10px;">
+            1-Click Demonstration Access
+          </div>
+
+          <button class="demo-btn" onclick="fillAndSubmit('admin', 'Admin@Hospital2026!')">
+            <div>
+              <div style="font-weight: 700; color: var(--color-primary);">Administrator</div>
+              <div style="font-size: 11px; color: #64748b;">Full operations, settings & reset controls</div>
+            </div>
+            <span style="font-size: 18px;">🛡️</span>
+          </button>
+
+          <button class="demo-btn" onclick="fillAndSubmit('triage_nurse', 'Triage@Care2026!')">
+            <div>
+              <div style="font-weight: 700; color: var(--color-primary);">Triage Staff</div>
+              <div style="font-size: 11px; color: #64748b;">Patient registration & queue prioritization</div>
+            </div>
+            <span style="font-size: 18px;">🩺</span>
+          </button>
+
+          <button class="demo-btn" onclick="fillAndSubmit('resource_mgr', 'Resource@Duty2026!')">
+            <div>
+              <div style="font-weight: 700; color: var(--color-primary);">Resource Staff</div>
+              <div style="font-size: 11px; color: #64748b;">Doctor allocation & bed cleaning management</div>
+            </div>
+            <span style="font-size: 18px;">🛏️</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 20px; font-size: 11px; color: #64748b; line-height: 1.4; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+          ⚠️ <strong>Academic Educational Prototype:</strong> All patient data is synthetic. This system assists workflow management and does not autonomously diagnose or determine medical urgency.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/static/js/app.js"></script>
+  <script>
+    function fillAndSubmit(u, p) {
+      document.getElementById("login-username").value = u;
+      document.getElementById("login-password").value = p;
+      document.getElementById("login-form").requestSubmit();
+    }
+
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById("login-error-alert");
+      errBox.style.display = "none";
+      const btn = document.getElementById("btn-login-submit");
+      btn.disabled = true;
+      btn.textContent = "Verifying Credentials...";
+
+      const u = document.getElementById("login-username").value.trim();
+      const p = document.getElementById("login-password").value;
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          errBox.textContent = data.error || "Authentication failed.";
+          errBox.style.display = "flex";
+          btn.disabled = false;
+          btn.textContent = "Sign In to Clinical Console →";
+          return;
+        }
+
+        window.location.href = "/dashboard";
+      } catch (err) {
+        errBox.textContent = "Network error: Unable to connect to ER server.";
+        errBox.style.display = "flex";
+        btn.disabled = false;
+        btn.textContent = "Sign In to Clinical Console →";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Management — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Attending Physicians & Doctor Management{% endblock %}
+
+{% block topbar_actions %}
+  <button class="btn btn-primary btn-sm" onclick="openModal('add-doctor-modal')">
+    ➕ Add Attending Physician
+  </button>
+{% endblock %}
+
+{% block content %}
+  <!-- Toolbar Card -->
+  <div class="content-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Status Filter -->
+        <div style="width: 170px;">
+          <select id="filter-doc-status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="Available">Available Only</option>
+            <option value="Busy">Busy (In Treatment)</option>
+            <option value="Off Duty">Off Duty</option>
+          </select>
+        </div>
+
+        <!-- Specialty Filter -->
+        <div style="width: 200px;">
+          <select id="filter-doc-specialty" class="form-select">
+            <option value="">All Clinical Specialties</option>
+            <option value="Emergency Medicine">Emergency Medicine</option>
+            <option value="Trauma Surgery">Trauma Surgery</option>
+            <option value="Cardiology">Cardiology</option>
+            <option value="Pediatrics">Pediatrics</option>
+            <option value="Critical Care">Critical Care</option>
+            <option value="General Medicine">General Medicine</option>
+          </select>
+        </div>
+
+        <!-- Search Box -->
+        <div style="flex: 1; min-width: 200px; display: flex; gap: 6px;">
+          <input type="text" id="filter-doc-search" class="form-control" placeholder="Search doctor name or ID code...">
+          <button id="btn-filter-doc-search" class="btn btn-outline">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctors Cards Grid -->
+  <div class="bed-grid" id="doctors-grid-container">
+    <div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #64748b;">
+      Loading attending physicians...
+    </div>
+  </div>
+
+  <!-- Add Doctor Modal -->
+  <div class="modal-overlay" id="add-doctor-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">👨‍⚕️ Add New Attending Physician</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-doctor">
+          <div class="form-group">
+            <label class="form-label">Doctor Code <span class="req">*</span></label>
+            <input type="text" id="new-doc-code" class="form-control" placeholder="e.g. DR-107" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Display Name <span class="req">*</span></label>
+            <input type="text" id="new-doc-name" class="form-control" placeholder="e.g. Dr. Jennifer Adams" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Clinical Specialty <span class="req">*</span></label>
+            <input type="text" id="new-doc-specialty" class="form-control" placeholder="e.g. Emergency Medicine, Toxicology" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Status</label>
+            <select id="new-doc-status" class="form-select">
+              <option value="Available">Available</option>
+              <option value="Off Duty">Off Duty</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Shift or Availability Notes</label>
+            <textarea id="new-doc-notes" class="form-control" rows="2" placeholder="e.g. Night shift ED coverage, on-call for ultrasound"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateDoctor()">Save Physician</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/resources.js"></script>
+{% endblock %}

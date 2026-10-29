@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Treatments & Assignments — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Clinical Treatments & Resource Assignments{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/queue" class="btn btn-primary btn-sm">
+    ⏳ Open Priority Queue
+  </a>
+{% endblock %}
+
+{% block content %}
+  <!-- Toolbar Card -->
+  <div class="content-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Status Filter -->
+        <div style="width: 200px;">
+          <select id="filter-assignment-status" class="form-select">
+            <option value="">All Assignment States</option>
+            <option value="Active" selected>Active Treatments Only</option>
+            <option value="Completed">Completed Treatments</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments Table Card -->
+  <div class="content-card">
+    <div class="card-header">
+      <div class="card-title">🩺 Treatment Session History & Active Care</div>
+    </div>
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Patient</th>
+            <th>Priority</th>
+            <th>Attending Doctor</th>
+            <th>Assigned Bed</th>
+            <th>Treatment Times</th>
+            <th>Status</th>
+            <th>Workflow Action</th>
+          </tr>
+        </thead>
+        <tbody id="assignments-table-tbody">
+          <tr><td colspan="8" style="text-align:center; padding: 24px;">Loading assignments...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Complete Treatment Modal -->
+  <div class="modal-overlay" id="complete-treatment-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">✅ Complete Emergency Care & Discharge</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="complete-assignment-id">
+        <p style="margin-bottom: 14px;">
+          Confirm treatment completion for patient <strong id="complete-patient-label"></strong>.
+        </p>
+
+        <div class="alert-box alert-info" style="margin-bottom: 16px;">
+          ℹ️ <strong>System Automation:</strong> The attending physician will be returned to 
+          <code>Available</code> status, and the occupied bed will be moved to <code>Cleaning</code> 
+          for infection control sanitation.
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Clinical Discharge / Outcome Notes</label>
+          <textarea id="complete-outcome-notes" class="form-control" rows="3" placeholder="Document treatment outcome, patient stability, discharge prescriptions, or ward transfer destination..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-accent" onclick="submitCompleteTreatment()">Finalize & Release Resources</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/resources.js"></script>
+{% endblock %}

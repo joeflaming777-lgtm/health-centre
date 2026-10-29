@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Registration — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Patient Registration & Triage Intake{% endblock %}
+
+{% block content %}
+  <div style="max-width: 860px; margin: 0 auto;">
+    <!-- Success Banner -->
+    <div id="reg-success-banner" class="alert-box alert-info" style="display: none; margin-bottom: 20px;"></div>
+
+    <div class="content-card">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="card-title">📝 New Emergency Patient Registration</div>
+          <div class="card-subtitle">Intake demographic data, symptoms, arrival timestamp, and authorized clinical triage categorization</div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="alert-box alert-warning" style="margin-bottom: 24px;">
+          <span class="alert-icon">⚕️</span>
+          <div>
+            <strong>Decision Support Protocol:</strong> In this educational prototype, triage urgency 
+            <strong>must be assigned by authorized clinical triage staff</strong>. 
+            The system does not infer medical diagnosis from chief complaint text.
+          </div>
+        </div>
+
+        <form id="patient-registration-form">
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+            <!-- Display Name -->
+            <div class="form-group">
+              <label class="form-label" for="reg-name">Patient Display Name <span class="req">*</span></label>
+              <input type="text" id="reg-name" class="form-control" placeholder="e.g. Johnathan Doe (Demo)" required autofocus>
+              <div class="form-error" id="err-reg-display_name"></div>
+            </div>
+
+            <!-- Age -->
+            <div class="form-group">
+              <label class="form-label" for="reg-age">Age (Years) <span class="req">*</span></label>
+              <input type="number" id="reg-age" class="form-control" placeholder="e.g. 45" min="0" max="130" required>
+              <div class="form-error" id="err-reg-age"></div>
+            </div>
+          </div>
+
+          <!-- Arrival Time -->
+          <div class="form-group">
+            <label class="form-label" for="reg-arrival-time">Arrival Date & Time <span class="req">*</span></label>
+            <input type="datetime-local" id="reg-arrival-time" class="form-control" required>
+            <div class="form-hint">Defaults to current operational time; adjust if recording retrospective ambulance arrival.</div>
+            <div class="form-error" id="err-reg-arrival_time"></div>
+          </div>
+
+          <!-- Triage Priority Category -->
+          <div class="form-group">
+            <label class="form-label" for="reg-priority">Clinical Triage Urgency Category <span class="req">*</span></label>
+            <select id="reg-priority" class="form-select" required>
+              <option value="1">Priority 1 — Critical (Resuscitation / Immediate life threat, target &le; 15 mins)</option>
+              <option value="2">Priority 2 — High (Emergency / Severe pain, fractures, burns, target &le; 30 mins)</option>
+              <option value="3" selected>Priority 3 — Medium (Urgent / Moderate pain, lacerations, asthma, target &le; 60 mins)</option>
+              <option value="4">Priority 4 — Low (Non-urgent / Minor sprains, rashes, suture removal, target &le; 120 mins)</option>
+            </select>
+            <div class="form-hint">Lower numeric value dictates higher clinical priority in the scheduling engine.</div>
+            <div class="form-error" id="err-reg-priority_rank"></div>
+          </div>
+
+          <!-- Symptoms / Chief Complaint -->
+          <div class="form-group">
+            <label class="form-label" for="reg-symptoms">Symptoms / Reason for Visit <span class="req">*</span></label>
+            <textarea id="reg-symptoms" class="form-control" rows="3" placeholder="Describe chief complaint, vital sign abnormalities, or mechanism of injury..." required></textarea>
+            <div class="form-error" id="err-reg-symptoms"></div>
+          </div>
+
+          <!-- Additional Notes -->
+          <div class="form-group">
+            <label class="form-label" for="reg-notes">Additional Clinical / Triage Notes (Optional)</label>
+            <textarea id="reg-notes" class="form-control" rows="2" placeholder="e.g. History of diabetes, allergies, wheelchair assistance required..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e2e8f0;">
+            <button type="reset" class="btn btn-outline">Reset Form</button>
+            <button type="submit" id="btn-submit-registration" class="btn btn-primary" style="padding: 10px 24px;">
+              💾 Register Patient & Place in Queue
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/patients.js"></script>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Directory — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Emergency Department Patient Directory{% endblock %}
+
+{% block topbar_actions %}
+  <a href="/patient-form" class="btn btn-primary btn-sm">
+    ➕ Register New Patient
+  </a>
+{% endblock %}
+
+{% block content %}
+  <!-- Toolbar Card -->
+  <div class="content-card" style="margin-bottom: 16px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Priority Filter -->
+        <div style="width: 170px;">
+          <select id="filter-patient-priority" class="form-select">
+            <option value="">All Priorities</option>
+            <option value="1">Priority 1 (Critical)</option>
+            <option value="2">Priority 2 (High)</option>
+            <option value="3">Priority 3 (Medium)</option>
+            <option value="4">Priority 4 (Low)</option>
+          </select>
+        </div>
+
+        <!-- Status Filter -->
+        <div style="width: 170px;">
+          <select id="filter-patient-status" class="form-select">
+            <option value="">All Statuses</option>
+            <option value="Waiting">Waiting</option>
+            <option value="In Treatment">In Treatment</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <!-- Search Box -->
+        <div style="flex: 1; min-width: 220px; display: flex; gap: 6px;">
+          <input type="text" id="filter-patient-search" class="form-control" placeholder="Search by name, ID code, or symptom...">
+          <button id="btn-filter-patient-search" class="btn btn-outline">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patients Table Card -->
+  <div class="content-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient ID</th>
+            <th>Display Name</th>
+            <th>Age</th>
+            <th>Symptoms / Reason</th>
+            <th>Triage Priority</th>
+            <th>Status</th>
+            <th>Arrival Time</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="patients-table-tbody">
+          <tr><td colspan="8" style="text-align:center; padding: 24px;">Loading patient directory...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="card-header" style="background:#f8fafc;" id="patients-pagination"></div>
+  </div>
+
+  <!-- Patient Details Modal -->
+  <div class="modal-overlay" id="patient-detail-modal">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 Clinical Patient Record & History</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="patient-detail-body">
+        Loading patient details...
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/patients.js"></script>
+{% endblock %}

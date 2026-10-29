@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Bed Management — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Emergency Bed Inventory & Sanitation Operations{% endblock %}
+
+{% block topbar_actions %}
+  <button class="btn btn-primary btn-sm" onclick="openModal('add-bed-modal')">
+    ➕ Add Emergency Bed Unit
+  </button>
+{% endblock %}
+
+{% block content %}
+  <!-- Sanitation Protocol Guide Callout -->
+  <div style="background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-xs);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 24px;">🧹</span>
+      <div>
+        <div style="font-size: 13.5px; font-weight: 700; color: var(--color-primary);">
+          Clinical Infection Control & Sanitation Workflow
+        </div>
+        <div style="font-size: 12px; color: var(--color-text-muted);">
+          Beds automatically enter <code>Cleaning</code> status upon treatment completion and cannot be allocated until terminal disinfection is recorded.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar Card -->
+  <div class="content-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Status Filter -->
+        <div style="width: 180px;">
+          <select id="filter-bed-status" class="form-select">
+            <option value="">All Bed Statuses</option>
+            <option value="Available">Available (Ready for Intake)</option>
+            <option value="Occupied">Occupied (Patient in Bed)</option>
+            <option value="Cleaning">Cleaning (Disinfection)</option>
+            <option value="Out of Service">Out of Service</option>
+          </select>
+        </div>
+
+        <!-- Bed Type Filter -->
+        <div style="width: 200px;">
+          <select id="filter-bed-type" class="form-select">
+            <option value="">All Bed Types</option>
+            <option value="Resuscitation">Resuscitation (Critical Care)</option>
+            <option value="Acute Care">Acute Care</option>
+            <option value="General ER">General ER</option>
+            <option value="Observation">Observation</option>
+            <option value="Pediatric ER">Pediatric ER</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visual Bed Inventory Cards Grid -->
+  <div class="bed-grid" id="beds-grid-container">
+    <div style="grid-column: 1/-1; text-align: center; padding: 24px; color: #64748b;">
+      Loading bed inventory...
+    </div>
+  </div>
+
+  <!-- Add Bed Modal -->
+  <div class="modal-overlay" id="add-bed-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">🛏️ Register Emergency Bed Unit</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-bed">
+          <div class="form-group">
+            <label class="form-label">Bed Code / Identifier <span class="req">*</span></label>
+            <input type="text" id="new-bed-code" class="form-control" placeholder="e.g. BED-11" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bed Type / Capability <span class="req">*</span></label>
+            <select id="new-bed-type" class="form-select" required>
+              <option value="General ER">General ER</option>
+              <option value="Acute Care">Acute Care</option>
+              <option value="Resuscitation">Resuscitation</option>
+              <option value="Observation">Observation</option>
+              <option value="Pediatric ER">Pediatric ER</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Location / Department Unit <span class="req">*</span></label>
+            <input type="text" id="new-bed-location" class="form-control" placeholder="e.g. Trauma Bay 3, Central Ward Cubicle 2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Initial Status</label>
+            <select id="new-bed-status" class="form-select">
+              <option value="Available">Available</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Out of Service">Out of Service</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" onclick="submitCreateBed()">Save Bed Unit</button>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/resources.js"></script>
+{% endblock %}

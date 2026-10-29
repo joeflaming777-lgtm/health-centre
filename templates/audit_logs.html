@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Audit Trail — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}System Audit Trail & Compliance Log{% endblock %}
+
+{% block topbar_actions %}
+  <button id="btn-refresh-audit" class="btn btn-outline btn-sm">
+    🔄 Refresh Logs
+  </button>
+{% endblock %}
+
+{% block content %}
+  <!-- Toolbar Card -->
+  <div class="content-card" style="margin-bottom: 20px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Action Filter -->
+        <div style="width: 220px;">
+          <select id="filter-audit-action" class="form-select">
+            <option value="">All Audit Actions</option>
+            <option value="TRIAGE_REGISTER">TRIAGE_REGISTER</option>
+            <option value="RESOURCE_ALLOCATE">RESOURCE_ALLOCATE</option>
+            <option value="TREATMENT_COMPLETE">TREATMENT_COMPLETE</option>
+            <option value="PATIENT_CANCEL">PATIENT_CANCEL</option>
+            <option value="TRIAGE_REPRIORITIZE">TRIAGE_REPRIORITIZE</option>
+            <option value="BED_START_CLEANING">BED_START_CLEANING</option>
+            <option value="BED_FINISH_CLEANING">BED_FINISH_CLEANING</option>
+            <option value="AUTH_LOGIN">AUTH_LOGIN</option>
+            <option value="AUTH_LOGOUT">AUTH_LOGOUT</option>
+          </select>
+        </div>
+
+        <!-- Entity Filter -->
+        <div style="width: 170px;">
+          <select id="filter-audit-entity" class="form-select">
+            <option value="">All Entities</option>
+            <option value="patient">patient</option>
+            <option value="assignment">assignment</option>
+            <option value="bed">bed</option>
+            <option value="doctor">doctor</option>
+            <option value="user">user</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Table Card -->
+  <div class="content-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Event #</th>
+            <th>Action</th>
+            <th>Entity</th>
+            <th>Entity ID</th>
+            <th>Details & Clinical Context</th>
+            <th>Actor Staff</th>
+            <th>Timestamp (UTC)</th>
+          </tr>
+        </thead>
+        <tbody id="audit-table-tbody">
+          <tr><td colspan="7" style="text-align:center; padding: 24px;">Loading audit events...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="card-header" style="background:#f8fafc;" id="audit-pagination"></div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script>
+    let currentAuditPage = 1;
+
+    async function loadAuditLogs(page = 1) {
+      const tbody = document.getElementById("audit-table-tbody");
+      if (!tbody) return;
+
+      currentAuditPage = page;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px;">Loading audit records...</td></tr>`;
+
+      const action = document.getElementById("filter-audit-action")?.value || "";
+      const entity = document.getElementById("filter-audit-entity")?.value || "";
+
+      let url = `/api/audit-events?page=${page}&per_page=20`;
+      if (action) url += `&action=${encodeURIComponent(action)}`;
+      if (entity) url += `&entity_type=${encodeURIComponent(entity)}`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed to load audit events");
+
+        const data = await res.json();
+        const events = data.events || [];
+
+        if (events.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="empty-state">
+                <div class="empty-state-icon">🛡️</div>
+                <div class="empty-state-title">No Audit Events</div>
+                <div>No events recorded matching selected criteria.</div>
+              </td>
+            </tr>
+          `;
+          renderAuditPagination(0, 1, 20);
+          return;
+        }
+
+        tbody.innerHTML = events.map(e => `
+          <tr>
+            <td><strong>#${e.id}</strong></td>
+            <td><code style="font-weight:700; color:var(--color-primary);">${escapeHtml(e.action)}</code></td>
+            <td><span class="badge" style="background:#f1f5f9;">${escapeHtml(e.entity_type)}</span></td>
+            <td><code>${escapeHtml(e.entity_id)}</code></td>
+            <td style="max-width: 380px;">${escapeHtml(e.details)}</td>
+            <td><strong>${escapeHtml(e.actor_name || 'System / Batch')}</strong></td>
+            <td>${formatDateTime(e.timestamp)}</td>
+          </tr>
+        `).join("");
+
+        renderAuditPagination(data.total_records, data.page, data.per_page);
+
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:red; text-align:center;">Error: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderAuditPagination(total, page, perPage) {
+      const container = document.getElementById("audit-pagination");
+      if (!container) return;
+
+      const totalPages = Math.ceil(total / perPage);
+      if (totalPages <= 1) {
+        container.innerHTML = `<span style="color:#64748b; font-size:12.5px;">Showing all ${total} audit records</span>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+          <span style="color:#64748b; font-size:12.5px;">
+            Page ${page} of ${totalPages} (${total} total events)
+          </span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm btn-outline" ${page <= 1 ? 'disabled' : ''} onclick="loadAuditLogs(${page - 1})">← Prev</button>
+            <button class="btn btn-sm btn-outline" ${page >= totalPages ? 'disabled' : ''} onclick="loadAuditLogs(${page + 1})">Next →</button>
+          </div>
+        </div>
+      `;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadAuditLogs(1);
+      document.getElementById("filter-audit-action")?.addEventListener("change", () => loadAuditLogs(1));
+      document.getElementById("filter-audit-entity")?.addEventListener("change", () => loadAuditLogs(1));
+      document.getElementById("btn-refresh-audit")?.addEventListener("click", () => loadAuditLogs(currentAuditPage));
+    });
+  </script>
+{% endblock %}

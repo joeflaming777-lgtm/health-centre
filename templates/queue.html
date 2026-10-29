@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Priority Queue — Hospital ER Scheduling System{% endblock %}
+{% block header_title %}Live Priority Scheduling Queue{% endblock %}
+
+{% block topbar_actions %}
+  <button id="btn-refresh-queue" class="btn btn-outline btn-sm">
+    🔄 Refresh Queue
+  </button>
+  <a href="/patient-form" class="btn btn-primary btn-sm">
+    ➕ New Intake
+  </a>
+{% endblock %}
+
+{% block content %}
+  <!-- Scheduling Algorithm Key Callout -->
+  <div style="background: white; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; box-shadow: var(--shadow-xs);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 24px;">⚖️</span>
+      <div>
+        <div style="font-size: 13.5px; font-weight: 700; color: var(--color-primary);">
+          Deterministic Clinical Priority Queue
+        </div>
+        <div style="font-size: 12px; color: var(--color-text-muted);">
+          Ordering tuple: <code>(priority_rank ASC, arrival_timestamp ASC, registration_sequence ASC)</code>
+        </div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <div style="text-align: right;">
+        <span style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">Queued Patients</span>
+        <div style="font-size: 20px; font-weight: 800; color: var(--color-primary);" id="queue-total-count">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter & Search Toolbar -->
+  <div class="content-card" style="margin-bottom: 16px;">
+    <div class="card-body" style="padding: 14px 20px;">
+      <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+        <!-- Priority Filter -->
+        <div style="min-width: 180px;">
+          <select id="filter-queue-priority" class="form-select">
+            <option value="">All Triage Priorities</option>
+            <option value="1">Priority 1 (Critical only)</option>
+            <option value="2">Priority 2 (High only)</option>
+            <option value="3">Priority 3 (Medium only)</option>
+            <option value="4">Priority 4 (Low only)</option>
+          </select>
+        </div>
+
+        <!-- Date Filter -->
+        <div style="width: 170px;">
+          <input type="date" id="filter-queue-date" class="form-control" title="Filter by arrival date">
+        </div>
+
+        <!-- Search Box -->
+        <div style="flex: 1; min-width: 220px; display: flex; gap: 6px;">
+          <input type="text" id="filter-queue-search" class="form-control" placeholder="Search patient code, name, symptoms...">
+          <button id="btn-filter-queue-search" class="btn btn-outline">Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Queue Table Container -->
+  <div class="content-card">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 60px;">Seq</th>
+            <th>Patient ID</th>
+            <th>Name & Demographics</th>
+            <th>Triage Priority</th>
+            <th>Arrival Time</th>
+            <th>Waiting Duration</th>
+            <th>Clinical Actions</th>
+          </tr>
+        </thead>
+        <tbody id="queue-table-tbody">
+          <tr><td colspan="7" style="text-align:center; padding: 28px;">Loading priority queue...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="/static/js/queue.js"></script>
+  <script src="/static/js/patients.js"></script>
+{% endblock %}
